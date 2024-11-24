@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .form-container {
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        .form-container input, .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .form-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+        .clear-button {
+            background-color: #e74c3c;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Attendance Tracker</h1>
+
+    <div class="form-container">
+        <input type="text" id="name" placeholder="Enter Full Name (ФИО)">
+        <input type="text" id="place" placeholder="Enter Place (Место)">
+        <input type="date" id="date">
+        <button onclick="addRecord()">Add Record</button>
+        <button class="clear-button" onclick="clearRecords()">Clear All Records</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Full Name (ФИО)</th>
+                <th>Place (Место)</th>
+                <th>Date (Дата)</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTable">
+        </tbody>
+    </table>
+
+    <script>
+        const attendanceTable = document.getElementById("attendanceTable");
+
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem("attendance")) || [];
+            records.forEach(record => addRowToTable(record));
+        }
+
+        function addRecord() {
+            const name = document.getElementById("name").value.trim();
+            const place = document.getElementById("place").value.trim();
+            const date = document.getElementById("date").value;
+
+            if (!name || !place || !date) {
+                alert("Please fill out all fields!");
+                return;
+            }
+
+            const record = { name, place, date };
+
+            const records = JSON.parse(localStorage.getItem("attendance")) || [];
+            records.push(record);
+            localStorage.setItem("attendance", JSON.stringify(records));
+
+            addRowToTable(record);
+
+            document.getElementById("name").value = "";
+            document.getElementById("place").value = "";
+            document.getElementById("date").value = "";
+        }
+
+        function addRowToTable(record) {
+            const row = document.createElement("tr");
+
+            const nameCell = document.createElement("td");
+            nameCell.textContent = record.name;
+            row.appendChild(nameCell);
+
+            const placeCell = document.createElement("td");
+            placeCell.textContent = record.place;
+            row.appendChild(placeCell);
+
+            const dateCell = document.createElement("td");
+            dateCell.textContent = record.date;
+            row.appendChild(dateCell);
+
+            attendanceTable.appendChild(row);
+        }
+
+        function clearRecords() {
+            if (confirm("Are you sure you want to clear all records?")) {
+                localStorage.removeItem("attendance");
+                attendanceTable.innerHTML = ""; 
+            }
+        }
+
+        loadRecords();
+    </script>
+</body>
+</html>
